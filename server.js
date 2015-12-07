@@ -75,7 +75,7 @@ app.get('/consumers/:consumer/lag', function (req, res) {
                                         if (e) {
                                             partition.end = -1;
                                             partition.lag = -1;
-                                            resolve(parition);
+                                            return resolve(partition);
                                         }
 
                                         var value = d[t][p];
