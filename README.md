@@ -21,7 +21,7 @@ ConsumerGroupB | TopicY | 2 | 11 | 2 | 9
 * consumers - a comma separated list of the name of the consumer groups registered and tracked in zookeeper
 
 
-##Docker
+## Docker
 The docker file will need to be built
 ```
 docker build -t wh/monitor .
