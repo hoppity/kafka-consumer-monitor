@@ -49,13 +49,16 @@ app.get('/consumers/:consumer/lag', function (req, res) {
                                         topic: t,
                                         partition: p
                                     };
-                                })
+                                });
                             });
                     }));
                 })
                 .then(function (topicPartitions) {
                     var partitions = [];
-                    topicPartitions.forEach(function (tp) { return partitions = partitions.concat(tp) });
+                    topicPartitions.forEach(function (tp) {
+                        partitions = partitions.concat(tp);
+                        return;
+                    });
                     return Promise.all(partitions.map(function (p) {
                         return getData('/consumers/' + p.consumer + '/offsets/' + p.topic + '/' + p.partition)
                             .then(function (offsetResult) {
@@ -93,7 +96,9 @@ app.get('/consumers/:consumer/lag', function (req, res) {
                 })
                 .then(function (r) {
                     var result = new linq(r)
-                        .OrderBy(function(r) { return r.consumer + '__' + r.topic + '__' + r.partition })
+                        .OrderBy(function(r) {
+                            return r.consumer + '__' + r.topic + '__' + r.partition;
+                        })
                         .ToArray();
                     res.send(r);
                 })
