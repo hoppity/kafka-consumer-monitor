@@ -28,7 +28,7 @@ var zkClient = zk.createClient(args.zkConnect),
 
             zkClient.getChildren('/consumers/' + c + '/offsets', function (e, d, z) {
                 if (e) return ops--;
-                
+
                 d.forEach(function (t) {
                     ops++;
 
@@ -82,7 +82,7 @@ var zkClient = zk.createClient(args.zkConnect),
 
             ops--;
         });
-            
+
         var interval = setInterval(function () {
             if (ops > 0) return;
             cb(result);
@@ -96,7 +96,7 @@ zkClient.once('connected', function () {
         poll(function (result) {
             var table = new Table({ head : ['Consumer', 'Topic', 'Partition', 'End', 'Offset', 'Lag']});
             new linq(result)
-                .OrderBy(function(r) { return r.consumer + '__' + r.topic + '__' + r.partition })
+                .OrderBy(function(r) { return r.consumer + '__' + r.topic + '__' + r.partition; })
                 .ToArray()
                 .forEach(function (r) { table.push([ r.consumer, r.topic, r.partition, r.end, r.offset, r.lag ]); });
             console.log(table.toString());
