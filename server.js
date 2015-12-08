@@ -5,17 +5,24 @@ var args = require('yargs').argv,
     linq = require('node-linq').LINQ,
     express = require('express');
 
-if (!args.zkConnect) {
+if (!args.zkConnect && !process.env.ZOOKEEPER_CONNECT) {
     console.error('zkConnect not specified');
     return;
 }
 
 var app = express();
 
+
+var getZkConnect = function() {
+    var connect = args.zkConnect || process.env.ZOOKEEPER_CONNECT;
+    return connect;
+};
+
+
 app.get('/consumers/:consumer/lag', function (req, res) {
     var consumer = req.params.consumer,
-        zkClient = zk.createClient(args.zkConnect),
-        kafkaClient = new kafka.Client(args.zkConnect, 'lagger'),
+        zkClient = zk.createClient(getZkConnect()),
+        kafkaClient = new kafka.Client(getZkConnect(), 'lagger'),
         kafkaOffset = new kafka.Offset(kafkaClient),
 
         denodeify = function (f, that) {
@@ -49,13 +56,16 @@ app.get('/consumers/:consumer/lag', function (req, res) {
                                         topic: t,
                                         partition: p
                                     };
-                                })
+                                });
                             });
                     }));
                 })
                 .then(function (topicPartitions) {
                     var partitions = [];
-                    topicPartitions.forEach(function (tp) { return partitions = partitions.concat(tp) });
+                    topicPartitions.forEach(function (tp) {
+                        partitions = partitions.concat(tp);
+                        return;
+                    });
                     return Promise.all(partitions.map(function (p) {
                         return getData('/consumers/' + p.consumer + '/offsets/' + p.topic + '/' + p.partition)
                             .then(function (offsetResult) {
@@ -93,7 +103,9 @@ app.get('/consumers/:consumer/lag', function (req, res) {
                 })
                 .then(function (r) {
                     var result = new linq(r)
-                        .OrderBy(function(r) { return r.consumer + '__' + r.topic + '__' + r.partition })
+                        .OrderBy(function(r) {
+                            return r.consumer + '__' + r.topic + '__' + r.partition;
+                        })
                         .ToArray();
                     res.send(r);
                 })
