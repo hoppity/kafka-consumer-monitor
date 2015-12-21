@@ -4,5 +4,11 @@
         "logName": "kafka-consumer-monitor",
         "level": "debug"
     },
-    "refreshInterval": 10000
+    "refreshInterval": {
+        "lag": 10000,
+        "metadata": 300000
+    },
+    "server": {
+        "port": 8000
+    }
 }
