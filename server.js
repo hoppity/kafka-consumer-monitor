@@ -11,20 +11,50 @@ var config      = require('./config');
 var app = express();
 
 
-zkLib.loadConsumerMetaData(function() {
-    logger.trace('loading the consumer offsets');
-    kafkaLib.getTopicOffsets();
-});
-
-var pollKafkaOffsets = function() {
-    setTimeout(function() {
-        kafkaLib.getTopicOffsets(pollKafkaOffsets);
-    }, config.refreshInterval);
+var loadMetadata = function(callback) {
+    zkLib.loadConsumerMetaData(callback);
 };
 
-pollKafkaOffsets();
+var loadKafkaOffsets = function(callback) {
+    kafkaLib.getTopicOffsets(callback);
+};
 
-app.get('/consumers/:consumer/lag', function (req, res) {
+
+var pollKafkaOffsets = function() {
+    logger.trace('polling for the latest kafka offsets');
+    setTimeout(function() {
+        kafkaLib.getTopicOffsets(pollKafkaOffsets);
+    }, config.refreshInterval.lag);
+};
+
+var pollMetadata = function() {
+    logger.trace('polling the latest metadata');
+    setTimeout(function() {
+        loadMetadata(pollMetadata);
+    }, config.refreshInterval.metadata);
+};
+
+
+loadMetadata(function() {
+    pollMetadata();
+    loadKafkaOffsets(pollKafkaOffsets);
+});
+
+
+app.get('/monitor/refresh', function(req, res) {
+    logger.trace('load metadata called from external source');
+    loadMetadata(function(err){
+        if (err) {
+            return res.status(500).json({'error_code': 500, 'message': err});
+        }
+
+        logger.trace('completed loading metadata');
+        res.status(200).send();
+    });
+});
+
+
+app.get('/consumers/:consumer/lag', function(req, res) {
     cache.get(req.params.consumer, function(err, value){
         if (!err) {
             // TODO : sort the response here if required
@@ -37,4 +67,4 @@ app.get('/consumers/:consumer/lag', function (req, res) {
     });
 });
 
-app.listen(8000);
+app.listen(config.server.port);
