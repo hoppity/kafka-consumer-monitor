@@ -5,7 +5,6 @@ var logger      = require('./logger.js').logger;
 var config      = require('./config');
 
 var app = express();
-
 var loadMetadata = function(callback) {
     zkLib.loadConsumerMetaData(callback);
 };
@@ -13,7 +12,6 @@ var loadMetadata = function(callback) {
 var loadKafkaOffsets = function(callback) {
     kafkaLib.getTopicOffsets(callback);
 };
-
 
 var pollKafkaOffsets = function() {
     logger.trace('polling for the latest kafka offsets');
