@@ -15,6 +15,7 @@ var loadKafkaOffsets = function(callback) {
 };
 
 var pollKafkaOffsets = function() {
+    logger.trace('polling for the latest kafka offsets');
     setTimeout(function() {
         loadKafkaOffsets(pollKafkaOffsets);
     }, config.refreshInterval.lag);
@@ -76,4 +77,4 @@ app.get('/consumers/:consumer/lag', function(req, res) {
     });
 });
 
-app.listen(8000);
+app.listen(config.server.port);
