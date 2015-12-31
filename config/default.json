@@ -2,13 +2,13 @@
     "zkConnect": "192.168.33.10:2181",
     "logging": {
         "logName": "kafka-consumer-monitor",
-        "level": "debug"
+        "level": "trace"
     },
     "refreshInterval": {
         "lag": 10000,
         "metadata": 300000
     },
-    "server": {
-        "port": 8000
+    "server" : {
+        "port" : 8000
     }
 }
