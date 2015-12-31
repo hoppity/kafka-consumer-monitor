@@ -3,8 +3,8 @@ var kafkaLib    = require('./lib/Kafka.js');
 var cache       = require('./lib/Cache.js').cache;
 var logger      = require('./logger.js').logger;
 var config      = require('./config');
-
-var app = express();
+var express     = require('express');
+var app         = express();
 var loadMetadata = function(callback) {
     zkLib.loadConsumerMetaData(callback);
 };
