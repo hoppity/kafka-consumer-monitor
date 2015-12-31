@@ -6,7 +6,7 @@ var config      = require('./config');
 var express     = require('express');
 var app         = express();
 
-var loadMetadata = function(callback) {
+ var loadMetadata = function(callback) {
     zkLib.loadConsumerMetaData(callback);
 };
 
