@@ -17,9 +17,7 @@
     "kafka-node": "^0.2.29",
     "node-linq": "0.0.5",
     "node-zookeeper-client": "^0.2.2",
-    "yargs": "^3.30.0"
-  },
-  "devDependencies": {
+    "yargs": "^3.30.0",
     "node-cache": "^3.0.0"
   }
 }
