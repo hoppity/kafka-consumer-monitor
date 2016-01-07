@@ -15,9 +15,10 @@
     "config-node": "^1.2.2",
     "express": "^4.13.3",
     "kafka-node": "^0.2.29",
+    "lodash": "^3.10.1",
+    "node-cache": "^3.0.0",
     "node-linq": "0.0.5",
     "node-zookeeper-client": "^0.2.2",
-    "yargs": "^3.30.0",
-    "node-cache": "^3.0.0"
+    "yargs": "^3.30.0"
   }
 }
