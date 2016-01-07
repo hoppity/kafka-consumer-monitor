@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "bunyan": "^1.5.1",
+    "bunyan-prettystream": "^0.1.3",
     "cli-table": "^0.3.1",
     "config-node": "^1.2.2",
     "express": "^4.13.3",
@@ -19,6 +20,7 @@
     "node-cache": "^3.0.0",
     "node-linq": "0.0.5",
     "node-zookeeper-client": "^0.2.2",
-    "yargs": "^3.30.0"
+    "yargs": "^3.30.0",
+    "node-cache": "^3.0.0"
   }
 }

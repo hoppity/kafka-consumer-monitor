@@ -1,5 +1,13 @@
 {
     "logging": {
-        "level": "info"
+        "stdout": {
+            "enabled": false
+        },
+        "file": {
+            "path": "/var/log/kafka-consumer-monitor",
+            "level": "info",
+            "enabled": true
+        }
     }
+
 }
