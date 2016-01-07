@@ -6,7 +6,7 @@ var config      = require('./config');
 var express     = require('express');
 var app         = express();
 
- var loadMetadata = function(callback) {
+var loadMetadata = function(callback) {
     zkLib.loadConsumerMetaData(callback);
 };
 
@@ -54,7 +54,6 @@ app.get('/monitor/refresh', function(req, res) {
         return res.status(200).send();
     });
 });
-
 
 app.get('/consumergroups', function(req, res){
     cache.keys(function(err, keys){
