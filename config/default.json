@@ -1,8 +1,16 @@
 {
     "zkConnect": "192.168.33.10:2181",
     "logging": {
-        "logName": "kafka-consumer-monitor",
-        "level": "debug"
+        "logName": "kafka-http-proxy",
+        "stdout": {
+            "level": "trace",
+            "enabled": true
+        },
+        "file": {
+            "path": "./kafka-http-proxy.log",
+            "level": "trace",
+            "enabled": false
+        }
     },
     "refreshInterval": {
         "lag": 10000,
