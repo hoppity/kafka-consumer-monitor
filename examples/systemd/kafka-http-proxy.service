@@ -1,0 +1,15 @@
+[Unit]
+Description=Kafka Consumer Monitor
+
+[Service]
+User=kafka-consmer-monitor
+WorkingDirectory=/opt/kafka-consumer-monitor
+ExecStart=/usr/bin/node ./server.js
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+EnvironmentFile=/etc/sysconfig/kafka-consumer-monitor
+
+[Install]
+WantedBy=multi-user.target
