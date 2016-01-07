@@ -5,14 +5,19 @@ var logger      = require('./logger.js').logger;
 var config      = require('./config');
 var express     = require('express');
 var app         = express();
+
 var loadMetadata = function(callback) {
     zkLib.loadConsumerMetaData(callback);
+};
+
+var loadKafkaOffsets = function(callback) {
+    kafkaLib.getTopicOffsets(callback);
 };
 
 var pollKafkaOffsets = function() {
     logger.trace('polling for the latest kafka offsets');
     setTimeout(function() {
-        kafkaLib.getTopicOffsets(pollKafkaOffsets);
+        loadKafkaOffsets(pollKafkaOffsets);
     }, config.refreshInterval.lag);
 };
 
@@ -30,6 +35,14 @@ loadMetadata(function() {
 });
 
 
+// CORS headers for external access from JS
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+
 app.get('/monitor/refresh', function(req, res) {
     logger.trace('load metadata called from external source');
     loadMetadata(function(err){
@@ -38,16 +51,25 @@ app.get('/monitor/refresh', function(req, res) {
         }
 
         logger.trace('completed loading metadata');
-        res.status(200).send();
+        return res.status(200).send();
+    });
+});
+
+
+app.get('/consumergroups', function(req, res){
+    cache.keys(function(err, keys){
+        logger.debug({keys: keys}, 'returned keys');
+        res.status(200).send(keys);
     });
 });
 
 
 app.get('/consumers/:consumer/lag', function(req, res) {
-    cache.get(req.params.consumer, function(err, value){
+    var consumer = req.params.consumer; 
+
+    cache.get(consumer, function(err, value){
         if (!err) {
             // TODO : sort the response here if required
-
             res.send(value);
         }
         else {
