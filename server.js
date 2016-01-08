@@ -11,27 +11,26 @@ var loadMetadata = function(callback) {
 };
 
 var loadKafkaOffsets = function(callback) {
+    logger.debug('begin loading the offsets from kafka');
     kafkaLib.getTopicOffsets(callback);
 };
 
-var pollKafkaOffsets = function() {
-    logger.trace('polling for the latest kafka offsets');
+var pollMetadata = function(callback) {
     setTimeout(function() {
-        loadKafkaOffsets(pollKafkaOffsets);
-    }, config.refreshInterval.lag);
-};
+        logger.debug('polling the latest metadata');
+        loadMetadata(function() {
+            loadKafkaOffsets(pollMetadata) 
+        });
+    }, config.refreshInterval);
 
-var pollMetadata = function() {
-    logger.trace('polling the latest metadata');
-    setTimeout(function() {
-        loadMetadata(pollMetadata);
-    }, config.refreshInterval.metadata);
+    if (!!callback) {
+        callback();
+    }
 };
 
 
 loadMetadata(function() {
-    pollMetadata();
-    loadKafkaOffsets(pollKafkaOffsets);
+    pollMetadata(loadKafkaOffsets);
 });
 
 
