@@ -12,10 +12,7 @@
             "enabled": false
         }
     },
-    "refreshInterval": {
-        "lag": 10000,
-        "metadata": 300000
-    },
+    "refreshInterval": 10000,
     "server": {
         "port": 8000
     }
