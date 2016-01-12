@@ -4,35 +4,27 @@ var cache       = require('./lib/Cache.js').cache;
 var logger      = require('./logger.js').logger;
 var config      = require('./config');
 var express     = require('express');
+var Promise     = require('promise');
 var app         = express();
 
-var loadMetadata = function(callback) {
-    zkLib.loadConsumerMetaData(callback);
+var loadMonitorData = function() {
+    logger.trace('loading consumer metadata');
+    return zkLib
+        .loadConsumerMetaData()
+        .then(kafkaLib.getTopicOffsets);
 };
 
-var loadKafkaOffsets = function(callback) {
-    logger.debug('begin loading the offsets from kafka');
-    kafkaLib.getTopicOffsets(callback);
-};
-
-var pollMetadata = function(callback) {
+var pollMetadata = function() {
     setTimeout(function() {
         logger.debug('polling the latest metadata');
-        loadMetadata(function() {
-            loadKafkaOffsets(pollMetadata) 
-        });
+        loadMonitorData()
+        .then(pollMetadata);
     }, config.refreshInterval);
-
-    if (!!callback) {
-        callback();
-    }
 };
 
 
-loadMetadata(function() {
-    pollMetadata(loadKafkaOffsets);
-});
-
+loadMonitorData()
+    .then(pollMetadata);
 
 // CORS headers for external access from JS
 app.use(function(req, res, next) {
@@ -44,14 +36,16 @@ app.use(function(req, res, next) {
 
 app.get('/monitor/refresh', function(req, res) {
     logger.trace('load metadata called from external source');
-    loadMetadata(function(err){
-        if (err) {
-            return res.status(500).json({'error_code': 500, 'message': err});
-        }
-
-        logger.trace('completed loading metadata');
-        return res.status(200).send();
-    });
+    loadMonitorData()
+        .then(function(){
+            logger.trace('completed loading metadata');
+            return res.status(200).send();
+        })
+        .catch(function(err){
+            if (err) {
+                return res.status(500).json({'error_code': 500, 'message': err});
+            }
+        });
 });
 
 app.get('/consumergroups', function(req, res){
